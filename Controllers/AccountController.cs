@@ -108,5 +108,14 @@
                 
                 return Ok(response);
             }
+            
+            
+            [HttpPost("logout")]
+            public async Task<IActionResult> Logout()
+            {
+                await _signInManager.SignOutAsync();
+                return Ok();
+            }
+            
         }
     }
