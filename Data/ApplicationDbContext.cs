@@ -6,30 +6,94 @@ namespace AuthAlbiWebSchool.Data;
 
 public class ApplicationDbContext : IdentityDbContext<User, Role,string>
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
-    {
-    }
-    
-    public DbSet<Category> Categories { get; set; }
-    
-    public DbSet<Product> Products { get; set; }
-    
-    
-    
-    
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        base.OnModelCreating(builder);
+   public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
 
-        builder.Entity<Category>().HasData(
-            new Category { Id = 1, Name = "Electronics", Description = "Devices and gadgets" },
-            new Category { Id = 2, Name = "Clothing", Description = "Apparel and accessories" },
-            new Category { Id = 3, Name = "Home Appliances", Description = "Devices for home use" },
-            new Category { Id = 4, Name = "Books", Description = "Literature and publications" }
-        );
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<ProductOrder> ProductOrders { get; set; }
 
-    }
-    
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // User configurations
+            builder.Entity<User>()
+                .HasOne(u => u.Cart)
+                .WithOne(c => c.User)
+                .HasForeignKey<Cart>(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Product configurations
+            builder.Entity<Product>()
+                .HasOne(p => p.Seller)
+                .WithMany(u => u.ProductsForSale)
+                .HasForeignKey(p => p.SellerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Product>()
+                .HasMany(p => p.Reviews)
+                .WithOne(r => r.Product)
+                .HasForeignKey(r => r.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Review configurations
+            builder.Entity<Review>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.Reviews)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Cart configurations
+            builder.Entity<CartItem>()
+                .HasOne(ci => ci.Product)
+                .WithMany(p => p.CartItems)
+                .HasForeignKey(ci => ci.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<CartItem>()
+                .HasOne(ci => ci.Cart)
+                .WithMany(c => c.CartItems)
+                .HasForeignKey(ci => ci.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Order configurations
+            builder.Entity<Order>()
+                .HasOne(o => o.User)
+                .WithMany(u => u.Orders)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ProductOrder>()
+                .HasOne(po => po.Order)
+                .WithMany(o => o.ProductOrders)
+                .HasForeignKey(po => po.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ProductOrder>()
+                .HasOne(po => po.Product)
+                .WithMany(p => p.ProductOrders)
+                .HasForeignKey(po => po.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Add useful indexes
+            builder.Entity<Product>()
+                .HasIndex(p => p.SellerId);
+
+            builder.Entity<Product>()
+                .HasIndex(p => p.CategoryId);
+
+            builder.Entity<CartItem>()
+                .HasIndex(ci => new { ci.CartId, ci.ProductId });
+
+            builder.Entity<ProductOrder>()
+                .HasIndex(po => new { po.OrderId, po.ProductId });
+        }
     
 }

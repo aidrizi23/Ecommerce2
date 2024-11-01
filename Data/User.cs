@@ -7,6 +7,10 @@ public class User : IdentityUser<string>
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string FullName => $"{FirstName} {LastName}";
-    
-    
+
+    // Navigation properties
+    public virtual Cart Cart { get; set; }
+    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+    public virtual ICollection<Product> ProductsForSale { get; set; } = new List<Product>();
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }
