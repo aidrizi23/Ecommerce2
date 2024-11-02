@@ -15,6 +15,31 @@ public class ProductRepository : IProductRepository
         _context = context;
     }
     
+    // method to create a new product
+    public async Task<Product> CreateProductAsync(Product product)
+    {
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync();
+        return product;
+    }
+    
+    // method to update a product
+    public async Task<Product> UpdateProductAsync(Product product)
+    {
+        _context.Products.Update(product);
+        await _context.SaveChangesAsync();
+        return product;
+    }
+    
+    
+    // method to delete a product
+    public async Task<Product> DeleteProductAsync(Product product)
+    {
+        _context.Products.Remove(product);
+        await _context.SaveChangesAsync();
+        return product;
+    }
+    
     public async Task<List<Product>> GetAllProductsAsync()
     {
         return await _context.Products
@@ -280,4 +305,10 @@ public interface IProductRepository
     Task<OrderResult> BuyNowAsync(string userId, int productId, int quantity);
     Task<OrderResult> CheckoutCartAsync(string userId);
     Task<CartResponseDto> GetCartAsync(string userId);
+    
+    Task<Product> CreateProductAsync(Product product);
+    Task<Product> UpdateProductAsync(Product product);
+    Task<Product> DeleteProductAsync(Product product);
+    
+    
 }

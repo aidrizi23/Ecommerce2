@@ -91,6 +91,10 @@ namespace AuthAlbiWebSchool.Controllers
                 Data = productDto
             });
         }
+        
+        
+      
     }
 
+    
 }
