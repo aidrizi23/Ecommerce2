@@ -127,6 +127,7 @@ public class ApplicationDbContext : IdentityDbContext<User, Role,string>
                     NormalizedUserName = "ADMIN@ADMIN.COM",
                     EmailConfirmed = true,
                     PasswordHash = hasher.HashPassword(null, "albiidrizi27"),
+                    SecurityStamp = Guid.NewGuid().ToString() 
 
 
                 });

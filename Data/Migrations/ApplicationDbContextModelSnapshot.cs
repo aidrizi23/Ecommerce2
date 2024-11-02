@@ -76,10 +76,6 @@ namespace AuthAlbiWebSchool.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -87,6 +83,23 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Electronics"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Clothing"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Books"
+                        });
                 });
 
             modelBuilder.Entity("AuthAlbiWebSchool.Data.Order", b =>
@@ -264,6 +277,26 @@ namespace AuthAlbiWebSchool.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "1",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "2",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "3",
+                            Name = "Seller",
+                            NormalizedName = "SELLER"
+                        });
                 });
 
             modelBuilder.Entity("AuthAlbiWebSchool.Data.User", b =>
@@ -337,6 +370,26 @@ namespace AuthAlbiWebSchool.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "1",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "9f469f5c-9064-4ae6-97ad-03e97d1e1fca",
+                            Email = "admin@admin.com",
+                            EmailConfirmed = true,
+                            FirstName = "Admin",
+                            LastName = "Admin",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@ADMIN.COM",
+                            NormalizedUserName = "ADMIN@ADMIN.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEI1v+Fh0uDLmlN3gQS2mww0UTR3WlKhjMp2gwcMmuTrIh5JrspDs7tK9mlOI5yVztw==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "cd8ffc07-434a-454f-8b96-dc81a355113a",
+                            TwoFactorEnabled = false,
+                            UserName = "admin@admin.com"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -424,6 +477,13 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "1",
+                            RoleId = "1"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -465,9 +525,9 @@ namespace AuthAlbiWebSchool.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("AuthAlbiWebSchool.Data.Product", "Product")
-                        .WithMany("CartItems")
+                        .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Cart");
@@ -606,8 +666,6 @@ namespace AuthAlbiWebSchool.Data.Migrations
 
             modelBuilder.Entity("AuthAlbiWebSchool.Data.Product", b =>
                 {
-                    b.Navigation("CartItems");
-
                     b.Navigation("ProductOrders");
 
                     b.Navigation("Reviews");

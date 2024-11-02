@@ -234,6 +234,38 @@ public class ProductRepository : IProductRepository
             };
         }
     }
+    
+    public async Task<CartResponseDto> GetCartAsync(string userId)
+    {
+        // get the cart of the user
+        var cart = await _context.Carts
+            .Include(c => c.CartItems)
+            .ThenInclude(ci => ci.Product)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        if (cart == null)
+        {
+            return new CartResponseDto 
+            { 
+                Items = new List<CartItemDto>(),
+                Total = 0 
+            };
+        }
+
+        var items = cart.CartItems.Select(ci => new CartItemDto
+        {
+            ProductId = ci.ProductId,
+            ProductName = ci.Product.Name,
+            UnitPrice = ci.Product.Price,
+            Quantity = ci.Quantity
+        }).ToList();
+
+        return new CartResponseDto
+        {
+            Items = items,
+            Total = items.Sum(i => i.Subtotal)
+        };
+    }
 
 
 }
@@ -247,4 +279,5 @@ public interface IProductRepository
     Task AddToCartAsync(string userId, int productId, int quantity);
     Task<OrderResult> BuyNowAsync(string userId, int productId, int quantity);
     Task<OrderResult> CheckoutCartAsync(string userId);
+    Task<CartResponseDto> GetCartAsync(string userId);
 }
