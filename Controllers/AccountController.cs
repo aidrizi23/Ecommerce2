@@ -151,5 +151,27 @@
                 return Ok(response);
             }
             
+            
+            // making a getCurrentUser method jsut for testing
+            [HttpGet("current-user")]
+            public async Task<IActionResult> GetCurrentUser()
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    ModelState.AddModelError("User", "User not found");
+                    return BadRequest(ModelState);
+                }
+                
+                var response = new ApiResponse<User>()
+                {
+                    Success = true,
+                    Message = "User found",
+                    Data = user
+                };
+                
+                return Ok(response);
+            }
+            
         }
     }

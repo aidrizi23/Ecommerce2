@@ -20,8 +20,12 @@ public class ProductRepository : IProductRepository
     {
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
+        await _context.Entry(product).Reference(p => p.Category).LoadAsync();
+        await _context.Entry(product).Reference(p => p.Seller).LoadAsync();
+        await _context.Entry(product).Collection(p => p.Reviews).LoadAsync();
         return product;
     }
+    
     
     // method to update a product
     public async Task<Product> UpdateProductAsync(Product product)
@@ -50,15 +54,16 @@ public class ProductRepository : IProductRepository
             .ToListAsync();
     }
 
-    public async Task<PaginatedList<Product>> GetAllPaginatedProductsAsync()
+    public async Task<PaginatedList<Product>> GetAllPaginatedProductsAsync(int pageIndex, int pageSize)
     {
         return await PaginatedList<Product>.CreateAsync(_context.Products
             .Where(p => p.IsActive && p.Stock > 0)
             .Include(p => p.Category)
             .Include(p => p.Seller)
-            .Include(x => x.Reviews), 1, 10);
+            .Include(x => x.Reviews), pageIndex, pageSize);
         
     }
+    
     
     public async Task<Product?> GetProductByIdAsync(int id)
     {
@@ -299,7 +304,7 @@ public class ProductRepository : IProductRepository
 public interface IProductRepository
 {
     Task<List<Product>> GetAllProductsAsync();
-    Task<PaginatedList<Product>> GetAllPaginatedProductsAsync();
+    Task<PaginatedList<Product>> GetAllPaginatedProductsAsync(int pageIndex, int pageSize);
     Task<Product?> GetProductByIdAsync(int id);
     Task AddToCartAsync(string userId, int productId, int quantity);
     Task<OrderResult> BuyNowAsync(string userId, int productId, int quantity);
@@ -309,6 +314,7 @@ public interface IProductRepository
     Task<Product> CreateProductAsync(Product product);
     Task<Product> UpdateProductAsync(Product product);
     Task<Product> DeleteProductAsync(Product product);
+    
     
     
 }

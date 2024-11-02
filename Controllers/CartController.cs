@@ -2,6 +2,7 @@ using System.Security.Claims;
 using AuthAlbiWebSchool.Data;
 using AuthAlbiWebSchool.Models;
 using AuthAlbiWebSchool.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +25,7 @@ namespace AuthAlbiWebSchool.Controllers
         }
         
         [HttpPost("add")]
+        [Authorize]
         public async Task<ActionResult<ApiResponse<CartResponseDto>>> AddToCart(AddToCartDto dto)
         {
             try
@@ -50,41 +52,10 @@ namespace AuthAlbiWebSchool.Controllers
             }
         }
         
-        [HttpPost("buy-now")]
-        public async Task<ActionResult<ApiResponse<int>>> BuyNow(AddToCartDto dto)
-        {
-            try
-            {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var result = await _productRepository.BuyNowAsync(userId, dto.ProductId, dto.Quantity);
-
-                if (result.Success)
-                {
-                    return Ok(new ApiResponse<int>
-                    {
-                        Success = true,
-                        Message = "Order placed successfully",
-                        Data = result.OrderId
-                    });
-                }
-
-                return BadRequest(new ApiResponse<int>
-                {
-                    Success = false,
-                    Message = result.Message
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new ApiResponse<int>
-                {
-                    Success = false,
-                    Message = "An error occurred while processing the order."
-                });
-            }
-        }
+       
         
         [HttpPost("checkout")]
+        [Authorize]
         public async Task<ActionResult<ApiResponse<int>>> CheckoutCart()
         {
             try

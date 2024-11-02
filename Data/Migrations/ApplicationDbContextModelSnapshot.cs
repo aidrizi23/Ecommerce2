@@ -376,7 +376,7 @@ namespace AuthAlbiWebSchool.Data.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9f469f5c-9064-4ae6-97ad-03e97d1e1fca",
+                            ConcurrencyStamp = "62c9f941-78f9-46b6-97be-8e7a6392d395",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             FirstName = "Admin",
@@ -384,9 +384,9 @@ namespace AuthAlbiWebSchool.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEI1v+Fh0uDLmlN3gQS2mww0UTR3WlKhjMp2gwcMmuTrIh5JrspDs7tK9mlOI5yVztw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFqWmCoepGO1o/CVhPOwshQozGPQTpLooBYBzxiV0Rsub7rl9rn3Fak5Cbvd4f9Dmw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "cd8ffc07-434a-454f-8b96-dc81a355113a",
+                            SecurityStamp = "5f901ca6-00d2-4393-b21a-c7360ee62b2e",
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.com"
                         });
