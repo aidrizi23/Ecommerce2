@@ -120,5 +120,36 @@
                 return Ok();
             }
             
+            // method to make the current user a seller
+            [HttpPost("make-seller")]
+            public async Task<IActionResult> MakeSeller()
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    ModelState.AddModelError("User", "User not found");
+                    return BadRequest(ModelState);
+                }
+                
+                var result = await _userManager.AddToRoleAsync(user, "Seller");
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(error.Code, error.Description);
+                    }
+                    return BadRequest(ModelState);
+                }
+                
+                var response = new ApiResponse<User>()
+                {
+                    Success = true,
+                    Message = "User is now a seller",
+                    Data = user
+                };
+                
+                return Ok(response);
+            }
+            
         }
     }
