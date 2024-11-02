@@ -69,12 +69,15 @@
                     return BadRequest(ModelState);
                 }
                 
+                // add the user to the default role (User)
+                await _userManager.AddToRoleAsync(user, "User");
+                
                 // sign in the user
                 await _signInManager.SignInAsync(user, model.RememberMe);
 
-                var response = new Response()
+                var response = new ApiResponse<User>()
                 {
-                    IsSuccess = true,
+                    Success = true,
                     Message = "User created successfully",
                     Data = user
                 };
@@ -99,10 +102,10 @@
                 
                 var user = await _userManager.FindByEmailAsync(model.Email);
                 
-                var response = new Response()
+                var response = new ApiResponse<User>()
                 {
-                    IsSuccess = true,
-                    Message = "User logged in successfully",
+                    Success = true,
+                    Message = "User created successfully",
                     Data = user
                 };
                 

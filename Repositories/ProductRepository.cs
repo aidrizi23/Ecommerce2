@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuthAlbiWebSchool.Repositories;
 
-public class ProductRepository
+public class ProductRepository : IProductRepository
 {
     private readonly ApplicationDbContext _context;
     private readonly UserManager<User> _userManager;
@@ -236,4 +236,15 @@ public class ProductRepository
     }
 
 
+}
+
+
+public interface IProductRepository
+{
+    Task<List<Product>> GetAllProductsAsync();
+    Task<PaginatedList<Product>> GetAllPaginatedProductsAsync();
+    Task<Product?> GetProductByIdAsync(int id);
+    Task AddToCartAsync(string userId, int productId, int quantity);
+    Task<OrderResult> BuyNowAsync(string userId, int productId, int quantity);
+    Task<OrderResult> CheckoutCartAsync(string userId);
 }

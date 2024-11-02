@@ -49,7 +49,7 @@ public class ApplicationDbContext : IdentityDbContext<User, Role,string>
                 .WithMany(u => u.Reviews)
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
-            
+
 
             builder.Entity<CartItem>()
                 .HasOne(ci => ci.Cart)
@@ -88,6 +88,77 @@ public class ApplicationDbContext : IdentityDbContext<User, Role,string>
 
             builder.Entity<ProductOrder>()
                 .HasIndex(po => new { po.OrderId, po.ProductId });
+
+
+            // create default roles
+            builder.Entity<Role>().HasData(
+                new Role
+                {
+                    Id = "1",
+                    Name = "Admin",
+                    NormalizedName = "ADMIN"
+                },
+                new Role
+                {
+                    Id = "2",
+                    Name = "User",
+                    NormalizedName = "USER"
+                },
+                new Role
+                {
+                    Id = "3",
+                    Name = "Seller",
+                    NormalizedName = "SELLER"
+                }
+
+            );
+
+            // create default user
+            var hasher = new PasswordHasher<User>();
+            builder.Entity<User>().HasData(
+                new User
+                {
+                    Id = "1",
+                    FirstName = "Admin",
+                    LastName = "Admin",
+                    Email = "admin@admin.com",
+                    UserName = "admin@admin.com",
+                    NormalizedEmail = "ADMIN@ADMIN.COM",
+                    NormalizedUserName = "ADMIN@ADMIN.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = hasher.HashPassword(null, "albiidrizi27"),
+
+
+                });
+
+            // add the default user to the Admin role
+            builder.Entity<IdentityUserRole<string>>().HasData(
+                new IdentityUserRole<string>
+                {
+                    RoleId = "1",
+                    UserId = "1"
+                }
+            );
+
+           // static categories
+            builder.Entity<Category>().HasData(
+                new Category
+                {
+                    Id = 1,
+                    Name = "Electronics"
+                },
+                new Category
+                {
+                    Id = 2,
+                    Name = "Clothing"
+                },
+                new Category
+                {
+                    Id = 3,
+                    Name = "Books"
+                }
+            );
+
+
         }
-    
 }

@@ -1,4 +1,5 @@
 using AuthAlbiWebSchool.Data;
+using AuthAlbiWebSchool.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,8 @@ builder.Services.AddIdentity<User, Role>(options =>
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 var app = builder.Build();
 
