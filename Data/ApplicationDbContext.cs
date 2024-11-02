@@ -49,13 +49,7 @@ public class ApplicationDbContext : IdentityDbContext<User, Role,string>
                 .WithMany(u => u.Reviews)
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            // Cart configurations
-            builder.Entity<CartItem>()
-                .HasOne(ci => ci.Product)
-                .WithMany(p => p.CartItems)
-                .HasForeignKey(ci => ci.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+            
 
             builder.Entity<CartItem>()
                 .HasOne(ci => ci.Cart)

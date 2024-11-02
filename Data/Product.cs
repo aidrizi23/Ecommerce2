@@ -20,6 +20,5 @@ public class Product : BaseEntity
     public virtual User Seller { get; set; }
     public virtual Category Category { get; set; }
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
-    public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
     public virtual ICollection<ProductOrder> ProductOrders { get; set; } = new List<ProductOrder>();
 }
