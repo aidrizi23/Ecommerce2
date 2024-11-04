@@ -51,6 +51,29 @@ namespace AuthAlbiWebSchool.Controllers
                 });
             }
         }
+
+        [HttpPost("remove-from-cart{productId}")]
+        
+        public async Task<ActionResult<ApiResponse<CartResponseDto>>> RemoveFromCart(int productId)
+        {
+            
+            // get the user
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            
+            // remove the product from the users
+            try
+            {
+                await _productRepository.RemoveFromCartAsync(userId, productId);
+
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest("Could not remove the product from the cart.");
+            }
+            
+        }
         
        
         

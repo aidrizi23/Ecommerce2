@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AuthAlbiWebSchool")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+84c3cd1121574b2594d6bb47522f8fa9689a8659")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+30d22e9c091fcd6e59422901bd2d6d0adcc024e2")]
 [assembly: System.Reflection.AssemblyProductAttribute("AuthAlbiWebSchool")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AuthAlbiWebSchool")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

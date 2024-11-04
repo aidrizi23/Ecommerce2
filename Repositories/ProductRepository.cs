@@ -10,9 +10,10 @@ public class ProductRepository : IProductRepository
 {
     private readonly ApplicationDbContext _context;
     private readonly UserManager<User> _userManager;
-    public ProductRepository(ApplicationDbContext context)
+    public ProductRepository(ApplicationDbContext context, UserManager<User> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
     
     // method to create a new product
@@ -79,7 +80,7 @@ public class ProductRepository : IProductRepository
     {
         // get the product and ensure it is active
         var product = await _context.Products
-            .FirstOrDefaultAsync(p => p.Id == productId && p.IsActive);
+            .FirstOrDefaultAsync(p => p.Id == productId && p.IsActive && !p.IsDeleted);
         
         if(product == null)
             throw new InvalidOperationException("Product not found or inactive");
@@ -129,13 +130,36 @@ public class ProductRepository : IProductRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task RemoveFromCartAsync(string userId, int productId)
+    {
+        // get the product
+        var product = await _context.Products.FindAsync(productId);
+        
+        if(product == null)
+            throw new InvalidOperationException("Product not found or inactive");
+        
+        var cart = await _context.Carts
+            .Include(c => c.CartItems)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+        
+        var existingItem = cart.CartItems
+            .FirstOrDefault(ci => ci.ProductId == productId);
+
+        if (existingItem != null)
+        {
+            cart.CartItems.Remove(existingItem);
+            await _context.SaveChangesAsync();
+        }
+        
+    }
+
     public async Task<OrderResult> BuyNowAsync(string userId, int productId, int quantity)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
             // get the product and ensure it is active
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId && p.IsActive == true);
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId && p.IsActive && !p.IsDeleted);
 
             if (product == null)
                 throw new InvalidOperationException("Product not found or inactive");
@@ -224,7 +248,7 @@ public class ProductRepository : IProductRepository
              _context.Orders.Add(order);
              await _context.SaveChangesAsync(); 
              
-             // now create a productOrder for each order 
+             // now create a productOrder for each product 
              foreach (var item in cart.CartItems)
              {
                  var productOrder = new ProductOrder
@@ -307,6 +331,7 @@ public interface IProductRepository
     Task<PaginatedList<Product>> GetAllPaginatedProductsAsync(int pageIndex, int pageSize);
     Task<Product?> GetProductByIdAsync(int id);
     Task AddToCartAsync(string userId, int productId, int quantity);
+    Task RemoveFromCartAsync(string userId, int productId);
     Task<OrderResult> BuyNowAsync(string userId, int productId, int quantity);
     Task<OrderResult> CheckoutCartAsync(string userId);
     Task<CartResponseDto> GetCartAsync(string userId);
