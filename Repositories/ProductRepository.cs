@@ -130,13 +130,8 @@ public class ProductRepository : IProductRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task RemoveFromCartAsync(string userId, int productId)
+    public async Task<CartItemResponse> RemoveFromCartAsync(string userId, int productId)
     {
-        // get the product
-        var product = await _context.Products.FindAsync(productId);
-        
-        if(product == null)
-            throw new InvalidOperationException("Product not found or inactive");
         
         var cart = await _context.Carts
             .Include(c => c.CartItems)
@@ -149,10 +144,59 @@ public class ProductRepository : IProductRepository
         {
             cart.CartItems.Remove(existingItem);
             await _context.SaveChangesAsync();
+
+            return new CartItemResponse()
+            {
+                Message = "Cart item remove Successfully",
+                Success = true,
+            };
         }
-        
+
+        return new CartItemResponse()
+        {
+            Message = "Could not find CartItem",
+            Success = false
+        };
     }
 
+
+    public async Task<CartItemResponse> UpdateCartItemAsync(string userId, int productId, int newQuantity)
+    {
+
+        // var product = await _context.Products.FindAsync(productId);
+        
+        var cart = await _context.Carts
+            .Include(c => c.CartItems)
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        var itemToUpdate = cart.CartItems
+            .FirstOrDefault(ci => ci.ProductId == productId);
+
+        if (itemToUpdate != null)
+        {
+            itemToUpdate.Quantity = newQuantity;
+
+            _context.CartItems.Update(itemToUpdate);
+            await _context.SaveChangesAsync();
+
+            return new CartItemResponse()
+            {
+                Message = "Cart Item updated successfully",
+                Success = true,
+            };
+            
+        }
+        
+        return new CartItemResponse()
+        {
+            Message = "Coult not find cart item",
+            Success = false,
+        };
+
+
+    }
+    
+    
     public async Task<OrderResult> BuyNowAsync(string userId, int productId, int quantity)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
@@ -331,7 +375,8 @@ public interface IProductRepository
     Task<PaginatedList<Product>> GetAllPaginatedProductsAsync(int pageIndex, int pageSize);
     Task<Product?> GetProductByIdAsync(int id);
     Task AddToCartAsync(string userId, int productId, int quantity);
-    Task RemoveFromCartAsync(string userId, int productId);
+    Task<CartItemResponse> RemoveFromCartAsync(string userId, int productId);
+    Task<CartItemResponse> UpdateCartItemAsync(string userId, int productId, int newQuantity);
     Task<OrderResult> BuyNowAsync(string userId, int productId, int quantity);
     Task<OrderResult> CheckoutCartAsync(string userId);
     Task<CartResponseDto> GetCartAsync(string userId);

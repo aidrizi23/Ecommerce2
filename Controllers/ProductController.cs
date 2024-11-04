@@ -96,7 +96,7 @@ namespace AuthAlbiWebSchool.Controllers
         
         [HttpPost("buy-now")]
         [Authorize]
-        public async Task<ActionResult<ApiResponse<int>>> BuyNow(AddToCartDto dto)
+        public async Task<ActionResult<ApiResponse<int>>> BuyNow(BuyNowDto dto)
         {
             try
             {

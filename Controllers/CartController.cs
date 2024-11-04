@@ -39,7 +39,6 @@ namespace AuthAlbiWebSchool.Controllers
                 {
                     Success = true,
                     Message = "Item added to cart successfully",
-                    Data = cart
                 });
             }
             catch (InvalidOperationException ex)
@@ -47,14 +46,15 @@ namespace AuthAlbiWebSchool.Controllers
                 return BadRequest(new ApiResponse<CartResponseDto>
                 {
                     Success = false,
-                    Message = ex.Message
+                    Message = ex.Message,
                 });
             }
         }
 
-        [HttpPost("remove-from-cart{productId}")]
+        [HttpPost("remove-from-cart")]
+        [Authorize]
         
-        public async Task<ActionResult<ApiResponse<CartResponseDto>>> RemoveFromCart(int productId)
+        public async Task<IActionResult> RemoveFromCart(int productId)
         {
             
             // get the user
@@ -66,12 +66,35 @@ namespace AuthAlbiWebSchool.Controllers
             {
                 await _productRepository.RemoveFromCartAsync(userId, productId);
 
-                return Ok();
+                return Ok(new ApiResponse<int>()
+                {
+                    Message = "Item remove successfuly",
+                    Success = true,
+                });
             }
             catch
             {
                 return BadRequest("Could not remove the product from the cart.");
             }
+            
+        }
+        
+        [HttpPut("update-item")]
+        [Authorize]
+
+        public async Task<ActionResult<ApiResponse<int>>> UpdateCartItem([FromBody] UpdateCartItemDto dto)
+        {
+            // get the user
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _productRepository.UpdateCartItemAsync(userId, dto.ProductId, dto.NewQuantity);
+
+            return Ok(new ApiResponse<int>
+            {
+                Message = result.Message,
+                Success = result.Success,
+                Data = dto.ProductId,
+            });
             
         }
         
