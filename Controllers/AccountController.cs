@@ -93,6 +93,18 @@
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 
+                // check if account is locked
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                
+                if (user != null && await _userManager.IsLockedOutAsync(user))
+                {
+                    ModelState.AddModelError("Lockout", "User account locked out");
+                    return BadRequest(ModelState);
+                }
+                
+                
+                
+                
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
                 if (!result.Succeeded)
                 {
@@ -100,7 +112,7 @@
                     return BadRequest(ModelState);
                 }
                 
-                var user = await _userManager.FindByEmailAsync(model.Email);
+                // var user = await _userManager.FindByEmailAsync(model.Email);
                 
                 var response = new ApiResponse<User>()
                 {
