@@ -1,6 +1,7 @@
     using AuthAlbiWebSchool.Data;
     using AuthAlbiWebSchool.Models;
     using AuthAlbiWebSchool.Models.Account;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
 
@@ -179,6 +180,95 @@
                 {
                     Success = true,
                     Message = "User found",
+                    Data = user
+                };
+                
+                return Ok(response);
+            }
+            
+            // method to change the password
+            [HttpPost("change-password")]
+            [Authorize]
+            public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordViewModel model)
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    ModelState.AddModelError("User", "User not found");
+                    return BadRequest(ModelState);
+                }
+                
+                var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(error.Code, error.Description);
+                    }
+                    return BadRequest(ModelState);
+                }
+                
+                var response = new ApiResponse<User>()
+                {
+                    Success = true,
+                    Message = "Password changed successfully",
+                    Data = user
+                };
+                
+                return Ok(response);
+            }
+            
+            // method for user update
+            [HttpPut("update")]
+            [Authorize]
+            public async Task<IActionResult> UpdateUser([FromBody] UserUpdateViewModel model)
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+                
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    ModelState.AddModelError("User", "User not found");
+                    return BadRequest(ModelState);
+                }
+                
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                
+                
+                // updating the email if it has changed
+                if (user.Email != model.Email)
+                {
+                    var existingUser = await _userManager.FindByEmailAsync(model.Email);
+                    if (existingUser != null)
+                    {
+                        ModelState.AddModelError("Email", "Email already exists");
+                        return BadRequest(ModelState);
+                    }
+                    
+                    user.Email = model.Email;
+                    user.UserName = model.Email;
+                    user.NormalizedEmail = model.Email.ToUpper();
+                    user.NormalizedUserName = model.Email.ToUpper();
+                }
+                var result = await _userManager.UpdateAsync(user);
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(error.Code, error.Description);
+                    }
+                    return BadRequest(ModelState);
+                }
+                
+                var response = new ApiResponse<User>()
+                {
+                    Success = true,
+                    Message = "User updated successfully",
                     Data = user
                 };
                 
