@@ -6,7 +6,7 @@
 
     namespace AuthAlbiWebSchool.Controllers
     {
-        [Route("api/[controller]")]
+        [Route("api/account")]
         [ApiController]
         public class AccountController : ControllerBase
         {
@@ -105,7 +105,7 @@
                 var response = new ApiResponse<User>()
                 {
                     Success = true,
-                    Message = "User created successfully",
+                    Message = "User logged-in successfully",
                     Data = user
                 };
                 

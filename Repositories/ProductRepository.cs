@@ -45,10 +45,17 @@ public class ProductRepository : IProductRepository
         return product;
     }
     
+    public async Task<Product> SoftDeleteProductAsync(Product product)
+    {
+        product.IsDeleted = true;
+        await _context.SaveChangesAsync();
+        return product;
+    }
+    
     public async Task<List<Product>> GetAllProductsAsync()
     {
         return await _context.Products
-            .Where(p => p.IsActive && p.Stock > 0)
+            .Where(p => p.IsActive && p.Stock > 0 && !p.IsDeleted)
             .Include(p => p.Category)
             .Include(p => p.Seller)
             .Include(x => x.Reviews)
@@ -58,7 +65,7 @@ public class ProductRepository : IProductRepository
     public async Task<PaginatedList<Product>> GetAllPaginatedProductsAsync(int pageIndex, int pageSize)
     {
         return await PaginatedList<Product>.CreateAsync(_context.Products
-            .Where(p => p.IsActive && p.Stock > 0)
+            .Where(p => p.IsActive && p.Stock > 0 && !p.IsDeleted)
             .Include(p => p.Category)
             .Include(p => p.Seller)
             .Include(x => x.Reviews), pageIndex, pageSize);
@@ -384,7 +391,9 @@ public interface IProductRepository
     Task<Product> CreateProductAsync(Product product);
     Task<Product> UpdateProductAsync(Product product);
     Task<Product> DeleteProductAsync(Product product);
-    
-    
-    
+
+    Task<Product> SoftDeleteProductAsync(Product product);
+
+
+
 }

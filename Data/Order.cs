@@ -9,8 +9,7 @@ public class Order
 
     // Foreign key
     public string UserId { get; set; }
-
-    // Navigation properties
     public virtual User User { get; set; }
+    
     public virtual ICollection<ProductOrder> ProductOrders { get; set; } = new List<ProductOrder>();
 }

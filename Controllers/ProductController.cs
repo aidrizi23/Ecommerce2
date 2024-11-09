@@ -186,6 +186,303 @@ namespace AuthAlbiWebSchool.Controllers
             }
         }
         
+        
+        // PUT: api/product/5
+        [HttpPut("{id}")]
+        [ Authorize]
+        public async Task<ActionResult<ApiResponse<ProductDto>>> UpdateProduct(int id, UpdateProductDto dto)
+        {
+            try
+            {
+                var product = await _productRepository.GetProductByIdAsync(id);
+                if (product == null)
+                {
+                    return NotFound(new ApiResponse<ProductDto>
+                    {
+                        Success = false,
+                        Message = "Product not found"
+                    });
+                }
+
+                // Check if the current user is the seller of the product
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (product.SellerId != userId)
+                {
+                    return Unauthorized(new ApiResponse<ProductDto>
+                    {
+                        Success = false,
+                        Message = "You are not authorized to update this product"
+                    });
+                }
+
+                product.Name = dto.Name;
+                product.Description = dto.Description;
+                product.Price = dto.Price;
+                product.Stock = dto.Stock;
+                product.Condition = dto.Condition;
+                product.Brand = dto.Brand;
+                product.CategoryId = dto.CategoryId;
+
+                await _productRepository.UpdateProductAsync(product);
+
+                var productDto = new ProductDto
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    Price = product.Price,
+                    Stock = product.Stock,
+                    Condition = product.Condition,
+                    Brand = product.Brand,
+                    SellerName = product.Seller?.FullName,
+                    CategoryName = product.Category?.Name
+                };
+
+                return Ok(new ApiResponse<ProductDto>
+                {
+                    Success = true,
+                    Message = "Product updated successfully",
+                    Data = productDto
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<ProductDto>
+                {
+                    Success = false,
+                    Message = "An error occurred while updating the product."
+                });
+            }
+        }
+        
+        
+        // DELETE: api/product/5
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse<ProductDto>>> DeleteProduct(int id)
+        {
+            try
+            {
+                var product = await _productRepository.GetProductByIdAsync(id);
+                if (product == null)
+                {
+                    return NotFound(new ApiResponse<ProductDto>
+                    {
+                        Success = false,
+                        Message = "Product not found"
+                    });
+                }
+
+                // Check if the current user is the seller of the product
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (product.SellerId != userId)
+                {
+                    return Unauthorized(new ApiResponse<ProductDto>
+                    {
+                        Success = false,
+                        Message = "You are not authorized to delete this product"
+                    });
+                }
+                
+                if(product.IsDeleted)
+                {
+                    return BadRequest(new ApiResponse<ProductDto>
+                    {
+                        Success = false,
+                        Message = "Product already deleted"
+                    });
+                }
+
+                await _productRepository.SoftDeleteProductAsync(product);
+
+                var productDto = new ProductDto
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    Price = product.Price,
+                    Stock = product.Stock,
+                    Condition = product.Condition,
+                    Brand = product.Brand,
+                    SellerName = product.Seller?.FullName,
+                    CategoryName = product.Category?.Name,
+                };
+
+                return Ok(new ApiResponse<ProductDto>
+                {
+                    Success = true,
+                    Message = "Product soft deleted successfully",
+                    Data = productDto
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<ProductDto>
+                {
+                    Success = false,
+                    Message = $"An error occurred while trying to soft delete the product. {ex}"
+                });
+            }
+        }
+        
+        
+        // Deactivate a product
+        [HttpPut("{id}/deactivate")]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse<ProductDto>>> DeactivateProduct(int id)
+        {
+            try
+            {
+                var product = await _productRepository.GetProductByIdAsync(id);
+                if (product == null)
+                {
+                    return NotFound(new ApiResponse<ProductDto>
+                    {
+                        Success = false,
+                        Message = "Product not found"
+                    });
+                }
+                
+                if(product.IsActive)
+                {
+                    return BadRequest(new ApiResponse<ProductDto>
+                    {
+                        Success = false,
+                        Message = "Product already active"
+                    });
+                }
+
+                // Check if the current user is the seller of the product
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (product.SellerId != userId)
+                {
+                    return Unauthorized(new ApiResponse<ProductDto>
+                    {
+                        Success = false,
+                        Message = "You are not authorized to deactivate this product"
+                    });
+                }
+
+                if (!product.IsActive)
+                {
+                    return BadRequest(new ApiResponse<ProductDto>
+                    {
+                        Success = false,
+                        Message = "Product already deactivated"
+                    });
+                }
+
+                product.IsActive = false;
+                await _productRepository.UpdateProductAsync(product);
+
+                var productDto = new ProductDto
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    Price = product.Price,
+                    Stock = product.Stock,
+                    Condition = product.Condition,
+                    Brand = product.Brand,
+                    SellerName = product.Seller?.FullName,
+                    CategoryName = product.Category?.Name,
+                };
+
+                return Ok(new ApiResponse<ProductDto>
+                {
+                    Success = true,
+                    Message = "Product deactivated successfully",
+                    Data = productDto
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<ProductDto>
+                {
+                    Success = false,
+                    Message = $"An error occurred while trying to deactivate the product. {ex}"
+                });
+            }
+        }
+        
+        // Activate a product
+        [HttpPut("{id}/activate")]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse<ProductDto>>> ActivateProduct(int id)
+        {
+            try
+            {
+                var product = await _productRepository.GetProductByIdAsync(id);
+                if (product == null)
+                {
+                    return NotFound(new ApiResponse<ProductDto>
+                    {
+                        Success = false,
+                        Message = "Product not found"
+                    });
+                }
+                
+                if(product.IsActive)
+                {
+                    return BadRequest(new ApiResponse<ProductDto>
+                    {
+                        Success = false,
+                        Message = "Product already active"
+                    });
+                }
+
+                // Check if the current user is the seller of the product
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (product.SellerId != userId)
+                {
+                    return Unauthorized(new ApiResponse<ProductDto>
+                    {
+                        Success = false,
+                        Message = "You are not authorized to activate this product"
+                    });
+                }
+
+                if (product.IsActive)
+                {
+                    return BadRequest(new ApiResponse<ProductDto>
+                    {
+                        Success = false,
+                        Message = "Product already active"
+                    });
+                }
+
+                product.IsActive = true;
+                await _productRepository.UpdateProductAsync(product);
+
+                var productDto = new ProductDto
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Description = product.Description,
+                    Price = product.Price,
+                    Stock = product.Stock,
+                    Condition = product.Condition,
+                    Brand = product.Brand,
+                    SellerName = product.Seller?.FullName,
+                    CategoryName = product.Category?.Name,
+                };
+
+                return Ok(new ApiResponse<ProductDto>
+                {
+                    Success = true,
+                    Message = "Product activated successfully",
+                    Data = productDto
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<ProductDto>
+                {
+                    Success = false,
+                    Message = $"An error occurred while trying to activate the product. {ex}"
+                });
+            }
+        }
        
     }
 

@@ -1,0 +1,15 @@
+﻿product update in product controller is to be implemented  DONE
+ 
+product deletion in product controller is to be implemented  DONE
+
+method to make product not avaliable in product controller is to be implemented (soft delete)  DONE
+
+user update is to be implemented in AccountController
+
+change password is to be implemented in AccountController
+
+Account Deletion is to be implemented in AccountController
+
+Account Deactivation is to be implemented in AccountController
+
+learn about the pipeline and add it to the project 
