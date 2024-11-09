@@ -29,11 +29,11 @@ public class ProductRepository : IProductRepository
     
     
     // method to update a product
-    public async Task<Product> UpdateProductAsync(Product product)
+    public async Task UpdateProductAsync(Product product)
     {
         _context.Products.Update(product);
         await _context.SaveChangesAsync();
-        return product;
+        // return product;
     }
     
     
@@ -389,7 +389,7 @@ public interface IProductRepository
     Task<CartResponseDto> GetCartAsync(string userId);
     
     Task<Product> CreateProductAsync(Product product);
-    Task<Product> UpdateProductAsync(Product product);
+    Task UpdateProductAsync(Product product);
     Task<Product> DeleteProductAsync(Product product);
 
     Task<Product> SoftDeleteProductAsync(Product product);

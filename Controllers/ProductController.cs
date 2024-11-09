@@ -343,7 +343,7 @@ namespace AuthAlbiWebSchool.Controllers
                     });
                 }
                 
-                if(product.IsActive)
+                if(!product.IsActive)
                 {
                     return BadRequest(new ApiResponse<ProductDto>
                     {
