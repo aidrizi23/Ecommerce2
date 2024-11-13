@@ -99,7 +99,7 @@ public class ReviewController : ControllerBase
 
     [HttpPut]
     [Authorize]
-    public async Task<IActionResult> Update(int id, ReviewForCreateDto dto)
+    public async Task<IActionResult> Update(int id, ReviewForUpdateDto dto)
     {
         // get the review
         var review = await _reviewRepository.GetReviewByIdAsync(id);
