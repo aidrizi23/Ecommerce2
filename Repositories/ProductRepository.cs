@@ -21,8 +21,14 @@ public class ProductRepository : IProductRepository
     {
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
-        await _context.Entry(product).Reference(p => p.Category).LoadAsync();
-        await _context.Entry(product).Reference(p => p.Seller).LoadAsync();
+        await _context.Entry(product)
+            .Reference(p => p.Category)
+            .LoadAsync();
+        
+        await _context.Entry(product)
+            .Reference(p => p.Seller)
+            .LoadAsync();
+        
         await _context.Entry(product).Collection(p => p.Reviews).LoadAsync();
         return product;
     }
@@ -38,11 +44,10 @@ public class ProductRepository : IProductRepository
     
     
     // method to delete a product
-    public async Task<Product> DeleteProductAsync(Product product)
+    public async Task DeleteProductAsync(Product product)
     {
         _context.Products.Remove(product);
         await _context.SaveChangesAsync();
-        return product;
     }
     
     public async Task<Product> SoftDeleteProductAsync(Product product)
@@ -390,7 +395,7 @@ public interface IProductRepository
     
     Task<Product> CreateProductAsync(Product product);
     Task UpdateProductAsync(Product product);
-    Task<Product> DeleteProductAsync(Product product);
+    Task DeleteProductAsync(Product product);
 
     Task<Product> SoftDeleteProductAsync(Product product);
 

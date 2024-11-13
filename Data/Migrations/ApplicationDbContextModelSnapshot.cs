@@ -239,6 +239,9 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.Property<double>("Rating")
                         .HasColumnType("float");
 
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -376,7 +379,7 @@ namespace AuthAlbiWebSchool.Data.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "62c9f941-78f9-46b6-97be-8e7a6392d395",
+                            ConcurrencyStamp = "4b354323-be06-45c4-99bf-91c6427c5c6e",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             FirstName = "Admin",
@@ -384,9 +387,9 @@ namespace AuthAlbiWebSchool.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFqWmCoepGO1o/CVhPOwshQozGPQTpLooBYBzxiV0Rsub7rl9rn3Fak5Cbvd4f9Dmw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDVsuuYGwvAOWNORhuDW0AP8Klhh4peHbRHHU++OcuS9Tn8UzzFfFhY3mI8UTUSdPA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5f901ca6-00d2-4393-b21a-c7360ee62b2e",
+                            SecurityStamp = "e67afe04-583c-4c06-8a0f-23a2ba909166",
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.com"
                         });

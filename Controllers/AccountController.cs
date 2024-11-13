@@ -110,6 +110,8 @@
                 if (!result.Succeeded)
                 {
                     ModelState.AddModelError("Login", "Invalid login attempt");
+                    Console.WriteLine(result.ToString());
+                    
                     return BadRequest(ModelState);
                 }
                 

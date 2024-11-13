@@ -35,7 +35,7 @@ builder.Services.AddIdentity<User, Role>(options =>
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
-
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
