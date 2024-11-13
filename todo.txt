@@ -14,5 +14,3 @@ Account Deactivation is to be implemented in AccountController
 
 learn about the pipeline and add it to the project 
 
-
-BEJ MRIGRIM
