@@ -13,4 +13,7 @@ public class User : IdentityUser<string>
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
     public virtual ICollection<Product> ProductsForSale { get; set; } = new List<Product>();
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+    
+    // field for account deletion request
+    public bool AccountDeletionRequested { get; set; } = false;
 }

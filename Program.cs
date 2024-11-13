@@ -1,3 +1,4 @@
+using AuthAlbiWebSchool.backgroundTasks;
 using AuthAlbiWebSchool.Data;
 using AuthAlbiWebSchool.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -36,6 +37,7 @@ builder.Services.AddIdentity<User, Role>(options =>
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddHostedService<AccountDeletionService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

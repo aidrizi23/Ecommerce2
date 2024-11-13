@@ -94,15 +94,17 @@
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
                 
-                // check if account is locked
+            
                 var user = await _userManager.FindByEmailAsync(model.Email);
+                
+                if(user != null && user.LockoutEnd > DateTimeOffset.Now && user.AccountDeletionRequested)
+                    await RecoverAccount(user);
                 
                 if (user != null && await _userManager.IsLockedOutAsync(user))
                 {
                     ModelState.AddModelError("Lockout", "User account locked out");
                     return BadRequest(ModelState);
                 }
-                
                 
                 
                 
@@ -126,6 +128,42 @@
                 
                 return Ok(response);
             }
+            
+            
+            [Authorize]
+            [HttpDelete("delete-account")]
+            public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountViewModel model)
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+        
+                var user = await _userManager.GetUserAsync(User);
+                var result = await _userManager.CheckPasswordAsync(user, model.Password);
+
+                if (!result)
+                {
+                    ModelState.AddModelError("Password", "Password is incorrect");
+                    return BadRequest(ModelState);
+                }
+
+                user.LockoutEnd = DateTimeOffset.Now.AddDays(30);
+                user.AccountDeletionRequested = true;
+                await _userManager.UpdateAsync(user);
+                await _signInManager.SignOutAsync();
+
+                var response = new ApiResponse<string>()
+                {
+                    Success = true,
+                    Message = "Account scheduled for deletion",
+                    Data = null
+                };
+
+                return Ok(response);
+            }
+
+            
+            
+            
             
             
             [HttpPost("logout")]
@@ -277,5 +315,13 @@
                 return Ok(response);
             }
             
+            
+            private async Task RecoverAccount(User user)
+            {
+                user.LockoutEnd = null;
+                user.AccountDeletionRequested = false;
+                await _userManager.UpdateAsync(user);
+        
+            }
         }
     }

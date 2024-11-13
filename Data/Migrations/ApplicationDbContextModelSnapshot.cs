@@ -310,6 +310,9 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<bool>("AccountDeletionRequested")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -379,7 +382,8 @@ namespace AuthAlbiWebSchool.Data.Migrations
                         {
                             Id = "1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4b354323-be06-45c4-99bf-91c6427c5c6e",
+                            AccountDeletionRequested = false,
+                            ConcurrencyStamp = "f5668ae4-27ec-457a-b031-8992925a2260",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             FirstName = "Admin",
@@ -387,9 +391,9 @@ namespace AuthAlbiWebSchool.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDVsuuYGwvAOWNORhuDW0AP8Klhh4peHbRHHU++OcuS9Tn8UzzFfFhY3mI8UTUSdPA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDE4yp4fenDU0DKKtuWiPpEUKUiLVTCOd5DcxpqAs8P74Dk3OeUk0PQkvvf5QeRjyw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e67afe04-583c-4c06-8a0f-23a2ba909166",
+                            SecurityStamp = "e7a4b51e-d73c-4861-9c58-c4ca992f8312",
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.com"
                         });
