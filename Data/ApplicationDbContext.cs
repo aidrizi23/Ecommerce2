@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace AuthAlbiWebSchool.Data;
-
-public class ApplicationDbContext : IdentityDbContext<User, Role,string>
+namespace AuthAlbiWebSchool.Data
 {
-   public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    public class ApplicationDbContext : IdentityDbContext<User, Role, string>
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
@@ -28,53 +28,54 @@ public class ApplicationDbContext : IdentityDbContext<User, Role,string>
                 .HasOne(u => u.Cart)
                 .WithOne(c => c.User)
                 .HasForeignKey<Cart>(c => c.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete for user-cart relationship
 
             // Product configurations
             builder.Entity<Product>()
                 .HasOne(p => p.Seller)
                 .WithMany(u => u.ProductsForSale)
                 .HasForeignKey(p => p.SellerId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict); // Changed from Cascade to Restrict to avoid multiple cascade paths
 
             builder.Entity<Product>()
                 .HasMany(p => p.Reviews)
                 .WithOne(r => r.Product)
                 .HasForeignKey(r => r.ProductId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete for product-review relationship
 
             // Review configurations
             builder.Entity<Review>()
                 .HasOne(r => r.User)
                 .WithMany(u => u.Reviews)
                 .HasForeignKey(r => r.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull); // SetNull on user delete for review-user relationship
 
-
+            // CartItem configurations
             builder.Entity<CartItem>()
                 .HasOne(ci => ci.Cart)
                 .WithMany(c => c.CartItems)
                 .HasForeignKey(ci => ci.CartId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete for cartitem-cart relationship
 
             // Order configurations
             builder.Entity<Order>()
                 .HasOne(o => o.User)
                 .WithMany(u => u.Orders)
                 .HasForeignKey(o => o.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull); // SetNull on user delete for order-user relationship
 
+            // ProductOrder configurations
             builder.Entity<ProductOrder>()
                 .HasOne(po => po.Order)
                 .WithMany(o => o.ProductOrders)
                 .HasForeignKey(po => po.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete for productorder-order relationship
 
             builder.Entity<ProductOrder>()
                 .HasOne(po => po.Product)
                 .WithMany(p => p.ProductOrders)
                 .HasForeignKey(po => po.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull); // SetNull on product delete for productorder-product relationship
 
             // Add useful indexes
             builder.Entity<Product>()
@@ -89,8 +90,7 @@ public class ApplicationDbContext : IdentityDbContext<User, Role,string>
             builder.Entity<ProductOrder>()
                 .HasIndex(po => new { po.OrderId, po.ProductId });
 
-
-            // create default roles
+            // Create default roles
             builder.Entity<Role>().HasData(
                 new Role
                 {
@@ -110,10 +110,9 @@ public class ApplicationDbContext : IdentityDbContext<User, Role,string>
                     Name = "Seller",
                     NormalizedName = "SELLER"
                 }
-
             );
 
-            // create default user
+            // Create default user
             var hasher = new PasswordHasher<User>();
             builder.Entity<User>().HasData(
                 new User
@@ -127,12 +126,10 @@ public class ApplicationDbContext : IdentityDbContext<User, Role,string>
                     NormalizedUserName = "ADMIN@ADMIN.COM",
                     EmailConfirmed = true,
                     PasswordHash = hasher.HashPassword(null, "albiidrizi27"),
-                    SecurityStamp = Guid.NewGuid().ToString() 
-
-
+                    SecurityStamp = Guid.NewGuid().ToString()
                 });
 
-            // add the default user to the Admin role
+            // Add the default user to the Admin role
             builder.Entity<IdentityUserRole<string>>().HasData(
                 new IdentityUserRole<string>
                 {
@@ -141,7 +138,7 @@ public class ApplicationDbContext : IdentityDbContext<User, Role,string>
                 }
             );
 
-           // static categories
+            // Static categories
             builder.Entity<Category>().HasData(
                 new Category
                 {
@@ -159,7 +156,6 @@ public class ApplicationDbContext : IdentityDbContext<User, Role,string>
                     Name = "Books"
                 }
             );
-
-
         }
+    }
 }

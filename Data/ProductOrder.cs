@@ -7,7 +7,7 @@ public class ProductOrder
 
     // Foreign keys
     public int OrderId { get; set; }
-    public int ProductId { get; set; }
+    public int? ProductId { get; set; }
 
     // Navigation properties
     public virtual Order Order { get; set; }

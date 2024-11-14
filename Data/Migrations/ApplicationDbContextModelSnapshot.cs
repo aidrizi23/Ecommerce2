@@ -121,7 +121,6 @@ namespace AuthAlbiWebSchool.Data.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -200,7 +199,7 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -243,7 +242,6 @@ namespace AuthAlbiWebSchool.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -383,7 +381,7 @@ namespace AuthAlbiWebSchool.Data.Migrations
                             Id = "1",
                             AccessFailedCount = 0,
                             AccountDeletionRequested = false,
-                            ConcurrencyStamp = "f5668ae4-27ec-457a-b031-8992925a2260",
+                            ConcurrencyStamp = "e8735722-6152-416e-893e-59c826c59b2b",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             FirstName = "Admin",
@@ -391,9 +389,9 @@ namespace AuthAlbiWebSchool.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDE4yp4fenDU0DKKtuWiPpEUKUiLVTCOd5DcxpqAs8P74Dk3OeUk0PQkvvf5QeRjyw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEL3yZ1owxWM+aJnPVEBVnTh1SBb1C+YqeMDlhJF+fudk8dqVITL96N0BpadmhI77EQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e7a4b51e-d73c-4861-9c58-c4ca992f8312",
+                            SecurityStamp = "1ee533a2-d71d-483d-8a2f-70aa308e0d91",
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.com"
                         });
@@ -517,7 +515,7 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.HasOne("AuthAlbiWebSchool.Data.User", "User")
                         .WithOne("Cart")
                         .HasForeignKey("AuthAlbiWebSchool.Data.Cart", "UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -547,8 +545,7 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.HasOne("AuthAlbiWebSchool.Data.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("User");
                 });
@@ -583,8 +580,7 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.HasOne("AuthAlbiWebSchool.Data.Product", "Product")
                         .WithMany("ProductOrders")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Order");
 
@@ -602,8 +598,7 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.HasOne("AuthAlbiWebSchool.Data.User", "User")
                         .WithMany("Reviews")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Product");
 

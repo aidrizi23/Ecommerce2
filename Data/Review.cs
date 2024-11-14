@@ -9,7 +9,7 @@ public class Review : BaseEntity
 
     // Foreign keys
     public int ProductId { get; set; }
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 
     // Navigation properties
     public virtual Product Product { get; set; }
