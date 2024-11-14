@@ -23,7 +23,7 @@ public class AccountDeletionService : IHostedService, IDisposable
     {
         _logger.LogInformation("Account Deletion Service is starting.");
         
-        _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromHours(24));
+        _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
         
         return Task.CompletedTask;
     }

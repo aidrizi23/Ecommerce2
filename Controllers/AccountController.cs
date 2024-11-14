@@ -132,13 +132,13 @@
             
             [Authorize]
             [HttpDelete("delete-account")]
-            public async Task<IActionResult> DeleteAccount([FromBody] DeleteAccountViewModel model)
+            public async Task<IActionResult> DeleteAccount(string password)
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
         
                 var user = await _userManager.GetUserAsync(User);
-                var result = await _userManager.CheckPasswordAsync(user, model.Password);
+                var result = await _userManager.CheckPasswordAsync(user, password);
 
                 if (!result)
                 {
@@ -146,7 +146,7 @@
                     return BadRequest(ModelState);
                 }
 
-                user.LockoutEnd = DateTimeOffset.Now.AddDays(30);
+                user.LockoutEnd = DateTimeOffset.Now.AddMinutes(2);
                 user.AccountDeletionRequested = true;
                 await _userManager.UpdateAsync(user);
                 await _signInManager.SignOutAsync();
@@ -161,7 +161,13 @@
                 return Ok(response);
             }
 
-            
+            private async Task RecoverAccount(User user)
+            {
+                user.LockoutEnd = null;
+                user.AccountDeletionRequested = false;
+                await _userManager.UpdateAsync(user);
+        
+            }
             
             
             
@@ -316,12 +322,32 @@
             }
             
             
-            private async Task RecoverAccount(User user)
+            
+            
+            // method to deactivate the account
+            [HttpDelete("deactivate-account")]
+            [Authorize]
+            public async Task<IActionResult> DeactivateAccount()
             {
-                user.LockoutEnd = null;
-                user.AccountDeletionRequested = false;
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    ModelState.AddModelError("User", "User not found");
+                    return BadRequest(ModelState);
+                }
+                
+                user.LockoutEnd = DateTimeOffset.MaxValue;
                 await _userManager.UpdateAsync(user);
-        
+                await _signInManager.SignOutAsync();
+                
+                var response = new ApiResponse<string>()
+                {
+                    Success = true,
+                    Message = "Account deactivated",
+                    Data = null
+                };
+                
+                return Ok(response);
             }
         }
     }
