@@ -1,4 +1,5 @@
 ﻿using AuthAlbiWebSchool.Data;
+using AuthAlbiWebSchool.Filters;
 using AuthAlbiWebSchool.Models;
 using AuthAlbiWebSchool.Pagination;
 using Microsoft.AspNetCore.Identity;
@@ -376,6 +377,45 @@ public class ProductRepository : IProductRepository
             Total = items.Sum(i => i.Subtotal)
         };
     }
+    
+    
+    
+    public async Task<PaginatedList<Product>> ApplyFiltersAsync(ProductFilterHelper query, int pageIndex, int pageSize)
+    {
+        var products = _context.Products
+            .Where(p => p.IsActive && p.Stock > 0 && !p.IsDeleted)
+            .Include(p => p.Category)
+            .Include(p => p.Seller)
+            .Include(x => x.Reviews)
+            .AsQueryable();
+
+        if (query.CategoryId.HasValue)
+        {
+            products = products.Where(p => p.CategoryId == query.CategoryId);
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.Name))
+        {
+            products = products.Where(p => p.Name.Contains(query.Name));
+        }
+
+        if (query.MinPrice.HasValue)
+        {
+            products = products.Where(p => p.Price >= query.MinPrice);
+        }
+
+        if (query.MaxPrice.HasValue)
+        {
+            products = products.Where(p => p.Price <= query.MaxPrice);
+        }
+
+        if (query.Rating.HasValue)
+        {
+            products = products.Where(p => p.Reviews.Any(r => r.Rating >= query.Rating));
+        }
+
+        return await PaginatedList<Product>.CreateAsync( products.AsQueryable(), pageIndex, pageSize);
+    }
 
 
 }
@@ -398,6 +438,7 @@ public interface IProductRepository
     Task DeleteProductAsync(Product product);
 
     Task<Product> SoftDeleteProductAsync(Product product);
+    Task<PaginatedList<Product>> ApplyFiltersAsync(ProductFilterHelper query, int pageIndex, int pageSize);
 
 
 

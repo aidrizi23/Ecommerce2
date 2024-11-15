@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using AuthAlbiWebSchool.Data;
+using AuthAlbiWebSchool.Filters;
 using AuthAlbiWebSchool.Models;
 using AuthAlbiWebSchool.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -483,7 +484,47 @@ namespace AuthAlbiWebSchool.Controllers
                 });
             }
         }
-       
+        
+        
+        
+        [HttpGet("filter")]
+        [Authorize]
+        public async Task<IActionResult> Filter([FromQuery] ProductFilterHelper query, int pageindex = 1, int pageSize = 10)
+        {
+
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user == null) 
+                return Unauthorized(new ApiResponse<List<ProductDto>>
+                {
+                    Success = false,
+                    Message = "You are not authorized to filter products"
+                });
+            
+            var products = await _productRepository.ApplyFiltersAsync(query, pageindex, pageSize);
+            
+            
+            var productDtos = products.Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                Stock = p.Stock,
+                Condition = p.Condition,
+                Brand = p.Brand,
+                SellerName = p.Seller?.FullName,
+                CategoryName = p.Category?.Name
+            }).ToList();
+            
+            return Ok(new ApiResponse<List<ProductDto>>
+            {
+                Success = true,
+                Data = productDtos
+            });
+            
+            
+        }
     }
 
     
