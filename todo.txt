@@ -8,13 +8,13 @@ user update is to be implemented in AccountController DONE
 
 change password is to be implemented in AccountController DONE
 
-Account Deletion is to be implemented in AccountController
+Account Deletion is to be implemented in AccountController DONE
 
-Account Deactivation is to be implemented in AccountController 
+Account Deactivation is to be implemented in AccountController DONE
 
-learn about the pipeline and add it to the project 
+learn about the pipeline and add it to the project DONE
 
-add the filters for the product {name, price, category}
+add the filters for the product {name, price, category} DONE
 
 
 
