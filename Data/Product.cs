@@ -21,4 +21,8 @@ public class Product : BaseEntity
     public virtual Category Category { get; set; }
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
     public virtual ICollection<ProductOrder> ProductOrders { get; set; } = new List<ProductOrder>();
+    
+    
+    public virtual ICollection<ProductDiscount> Discounts { get; set; } = new List<ProductDiscount>();
+    public bool HasDiscounts => Discounts.Any();
 }

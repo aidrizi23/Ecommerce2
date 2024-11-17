@@ -16,4 +16,7 @@ public class User : IdentityUser<string>
     
     // field for account deletion request
     public bool AccountDeletionRequested { get; set; } = false;
+    
+    public virtual ICollection<UserDiscount> UserDiscounts { get; set; } = new List<UserDiscount>();
+    public bool HasDiscounts => UserDiscounts.Any();
 }

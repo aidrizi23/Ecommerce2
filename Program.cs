@@ -37,6 +37,7 @@ builder.Services.AddIdentity<User, Role>(options =>
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
 builder.Services.AddHostedService<AccountDeletionService>();
 var app = builder.Build();
 

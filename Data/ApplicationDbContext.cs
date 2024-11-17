@@ -18,7 +18,9 @@ namespace AuthAlbiWebSchool.Data
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<ProductOrder> ProductOrders { get; set; }
-
+        public DbSet<Discount> Discounts { get; set; }
+        public DbSet<ProductDiscount> ProductDiscounts { get; set; }
+        public DbSet<UserDiscount> UserDiscounts { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -89,6 +91,12 @@ namespace AuthAlbiWebSchool.Data
 
             builder.Entity<ProductOrder>()
                 .HasIndex(po => new { po.OrderId, po.ProductId });
+            
+            builder.Entity<ProductDiscount>()
+                .HasKey(pd => new { pd.ProductId, pd.DiscountId });
+
+            builder.Entity<UserDiscount>()
+                .HasKey(ud => new { ud.UserId, ud.DiscountId });
 
             // Create default roles
             builder.Entity<Role>().HasData(
