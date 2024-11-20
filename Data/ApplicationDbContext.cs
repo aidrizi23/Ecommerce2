@@ -21,6 +21,10 @@ namespace AuthAlbiWebSchool.Data
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<ProductDiscount> ProductDiscounts { get; set; }
         public DbSet<UserDiscount> UserDiscounts { get; set; }
+        public DbSet<FixedAmountDiscount> FixedAmountDiscounts { get; set; }
+        public DbSet<PercentageDiscount> PercentageDiscounts { get; set; }
+        
+        public DbSet<BuyXGetYDiscount> BuyXGetYDiscounts { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

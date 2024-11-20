@@ -102,6 +102,45 @@ namespace AuthAlbiWebSchool.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("AuthAlbiWebSchool.Data.Discount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
+
+                    b.Property<DateTimeOffset>("EndDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("StartDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Discounts");
+
+                    b.HasDiscriminator().HasValue("Discount");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("AuthAlbiWebSchool.Data.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -186,6 +225,21 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.HasIndex("SellerId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("AuthAlbiWebSchool.Data.ProductDiscount", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DiscountId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductId", "DiscountId");
+
+                    b.HasIndex("DiscountId");
+
+                    b.ToTable("ProductDiscounts");
                 });
 
             modelBuilder.Entity("AuthAlbiWebSchool.Data.ProductOrder", b =>
@@ -381,7 +435,7 @@ namespace AuthAlbiWebSchool.Data.Migrations
                             Id = "1",
                             AccessFailedCount = 0,
                             AccountDeletionRequested = false,
-                            ConcurrencyStamp = "e8735722-6152-416e-893e-59c826c59b2b",
+                            ConcurrencyStamp = "29a7d9a5-758c-47e3-9712-3eaf3d437cdc",
                             Email = "admin@admin.com",
                             EmailConfirmed = true,
                             FirstName = "Admin",
@@ -389,12 +443,27 @@ namespace AuthAlbiWebSchool.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@ADMIN.COM",
                             NormalizedUserName = "ADMIN@ADMIN.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEL3yZ1owxWM+aJnPVEBVnTh1SBb1C+YqeMDlhJF+fudk8dqVITL96N0BpadmhI77EQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENkV2JcXIZ96wXpEzhRX4mLNCG3KhQT4J6WxsxfyQZfk7Y5NtpmYhO9ID6oJfBrQuA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1ee533a2-d71d-483d-8a2f-70aa308e0d91",
+                            SecurityStamp = "acf7c3e6-e169-42ad-b02a-59dc923418ab",
                             TwoFactorEnabled = false,
                             UserName = "admin@admin.com"
                         });
+                });
+
+            modelBuilder.Entity("AuthAlbiWebSchool.Data.UserDiscount", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("DiscountId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "DiscountId");
+
+                    b.HasIndex("DiscountId");
+
+                    b.ToTable("UserDiscounts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -510,6 +579,39 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("AuthAlbiWebSchool.Data.BuyXGetYDiscount", b =>
+                {
+                    b.HasBaseType("AuthAlbiWebSchool.Data.Discount");
+
+                    b.Property<int>("FreeQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequiredQuantity")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("BuyXGetYDiscount");
+                });
+
+            modelBuilder.Entity("AuthAlbiWebSchool.Data.FixedAmountDiscount", b =>
+                {
+                    b.HasBaseType("AuthAlbiWebSchool.Data.Discount");
+
+                    b.Property<decimal>("AmountOff")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasDiscriminator().HasValue("FixedAmountDiscount");
+                });
+
+            modelBuilder.Entity("AuthAlbiWebSchool.Data.PercentageDiscount", b =>
+                {
+                    b.HasBaseType("AuthAlbiWebSchool.Data.Discount");
+
+                    b.Property<decimal>("PercentageOff")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasDiscriminator().HasValue("PercentageDiscount");
+                });
+
             modelBuilder.Entity("AuthAlbiWebSchool.Data.Cart", b =>
                 {
                     b.HasOne("AuthAlbiWebSchool.Data.User", "User")
@@ -569,6 +671,25 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.Navigation("Seller");
                 });
 
+            modelBuilder.Entity("AuthAlbiWebSchool.Data.ProductDiscount", b =>
+                {
+                    b.HasOne("AuthAlbiWebSchool.Data.Discount", "Discount")
+                        .WithMany("ProductDiscounts")
+                        .HasForeignKey("DiscountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AuthAlbiWebSchool.Data.Product", "Product")
+                        .WithMany("Discounts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Discount");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("AuthAlbiWebSchool.Data.ProductOrder", b =>
                 {
                     b.HasOne("AuthAlbiWebSchool.Data.Order", "Order")
@@ -601,6 +722,25 @@ namespace AuthAlbiWebSchool.Data.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AuthAlbiWebSchool.Data.UserDiscount", b =>
+                {
+                    b.HasOne("AuthAlbiWebSchool.Data.Discount", "Discount")
+                        .WithMany("UserDiscounts")
+                        .HasForeignKey("DiscountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AuthAlbiWebSchool.Data.User", "User")
+                        .WithMany("UserDiscounts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Discount");
 
                     b.Navigation("User");
                 });
@@ -661,6 +801,13 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.Navigation("CartItems");
                 });
 
+            modelBuilder.Entity("AuthAlbiWebSchool.Data.Discount", b =>
+                {
+                    b.Navigation("ProductDiscounts");
+
+                    b.Navigation("UserDiscounts");
+                });
+
             modelBuilder.Entity("AuthAlbiWebSchool.Data.Order", b =>
                 {
                     b.Navigation("ProductOrders");
@@ -668,6 +815,8 @@ namespace AuthAlbiWebSchool.Data.Migrations
 
             modelBuilder.Entity("AuthAlbiWebSchool.Data.Product", b =>
                 {
+                    b.Navigation("Discounts");
+
                     b.Navigation("ProductOrders");
 
                     b.Navigation("Reviews");
@@ -683,6 +832,8 @@ namespace AuthAlbiWebSchool.Data.Migrations
                     b.Navigation("ProductsForSale");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("UserDiscounts");
                 });
 #pragma warning restore 612, 618
         }
